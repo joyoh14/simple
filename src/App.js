@@ -5,15 +5,71 @@ import {v4 as uuidv4} from 'uuid';
 import {onValue, ref, set} from 'firebase/database';
 import {db} from './firebase';
 import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
+
+const StyledChat = styled.div`
+  width: 430px;
+  margin: 0 auto;
+  h1{
+    text-align: center;
+  }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+`
+
+const MyChat = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  margin-bottom: 1rem;
+  .c{
+    background-color: #E4C129;
+    color: black;
+    display: inline-block;
+    border-radius: 10px;
+    padding: .5rem 1rem;
+    .text{
+      font-size: 20px;
+      font-weight: bold;
+      
+    }
+  }
+`;
+
+const OtherChat = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  background-color: black;
+  color: white;
+
+  .c{
+    background-color: #E4C129;
+    color: black;
+    display: inline-block;
+    border-radius: 10px;
+    padding: .5rem 1rem;
+    .text{
+      font-size: 20px;
+      font-weight: bold;
+      
+    }
+  }
+`
 function App() {
   const [text, setText] = useState();
   const [messages, setMessages] = useState([]);
 const onClickSend = () => {
+
+  const m = moment().millisecond();
   set(ref(db, 
-    `message/${moment().format('YYYYMMDDhhmmss')}`),
+    `message/${moment().format('YYYYMMDDhhmmss')}${m}`),
     {
       text: text,
+      user: '1'
     }
   )
 }
@@ -37,7 +93,7 @@ useEffect(() => {
   })
 }, [])
   return (
-    <div className="App">
+    <StyledChat>
       <h1>채팅</h1>
       {
         messages.map(m => {
@@ -49,16 +105,39 @@ useEffect(() => {
           const min = m.time.substr(10, 2);
           const sec = m.time.substr(12, 2);
           
-          return (
-            <div>
-              {m.text}, {year}-{month}-{day} {hour}:{min}:{sec}
-            </div>
-          )
+          if(m.user === '1'){
+            return (
+              <MyChat>
+                <div className='c'>
+                  <div className='text'>
+                  {m.text}
+                  </div>
+                  <div className='time'>
+                  {year}-{month}-{day} {hour}:{min}:{sec}
+                  </div>
+                </div>
+              </MyChat>
+            )
+          }
+          else{
+            return(
+              <OtherChat>
+                <div className='c'>
+                  <div className='text'>
+                {m.text}
+                </div>
+                <div className='time'>
+                {year}-{month}-{day} {hour}:{min}:{sec}
+                </div>
+                </div>
+            </OtherChat>
+            )
+          }
         })
       }
       <input onChange={(e) => setText(e.target.value)}></input>
       <button onClick={onClickSend}>전송</button>
-    </div>
+    </StyledChat>
   );
 }
 
