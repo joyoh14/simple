@@ -43,12 +43,10 @@ const OtherChat = styled.div`
   display: flex;
   flex-direction: column;
   align-items: start;
-  background-color: black;
-  color: white;
 
   .c{
-    background-color: #E4C129;
-    color: black;
+    background-color: #007DFF;
+    color: white;
     display: inline-block;
     border-radius: 10px;
     padding: .5rem 1rem;
