@@ -17,6 +17,24 @@ const StyledChat = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  input{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;;
+   
+  }
+  .send{
+    position: fixed;
+    bottom: 0;
+    width: 150px;
+    right: 0;
+    z-index: 100;
+    height: 50px;
+  }
   
 `
 
@@ -61,15 +79,18 @@ function App() {
   const [text, setText] = useState();
   const [messages, setMessages] = useState([]);
 const onClickSend = () => {
-
+  if(text === ''){
+    return;
+  }
   const m = moment().millisecond();
   set(ref(db, 
     `message/${moment().format('YYYYMMDDhhmmss')}${m}`),
     {
       text: text,
-      user: '1'
+      user: window.navigator.userAgent
     }
   )
+  setText("")
 }
 
 useEffect(() => {
@@ -103,7 +124,7 @@ useEffect(() => {
           const min = m.time.substr(10, 2);
           const sec = m.time.substr(12, 2);
           
-          if(m.user === '1'){
+          if(m.user === window.navigator.userAgent){
             return (
               <MyChat>
                 <div className='c'>
@@ -133,8 +154,8 @@ useEffect(() => {
           }
         })
       }
-      <input onChange={(e) => setText(e.target.value)}></input>
-      <button onClick={onClickSend}>전송</button>
+      <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e)=> e.key === "Enter"&& onClickSend()}></input>
+      <button  className="send"onClick={onClickSend}>전송</button>
     </StyledChat>
   );
 }
